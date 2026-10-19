@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>CyberSafe Stories | قصص الأمن السيبراني</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="CyberSafe Stories home">
+      <span class="brand-mark">盾</span>
+      <span>
+        <strong>CyberSafe Stories</strong>
+        <small>قصص الأمن السيبراني</small>
+      </span>
+    </a>
+    <div class="header-actions">
+      <span class="internal-label"><span class="dot"></span><span data-en="Employee awareness board" data-ar="لوحة توعية الموظفين">Employee awareness board</span></span>
+      <button class="lang-btn" id="languageToggle" type="button">العربية</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow" data-en="LEARN FROM REAL EXPERIENCES" data-ar="نتعلم من التجارب الواقعية">LEARN FROM REAL EXPERIENCES</p>
+        <h1 data-en="One experience can protect us all." data-ar="تجربة واحدة قد تحمينا جميعاً.">One experience can protect us all.</h1>
+        <p class="hero-sub" data-en="Share a cybersecurity incident, warning sign, or lesson learned. Help colleagues recognize risks before they happen." data-ar="شارك تجربة أو علامة تحذيرية أو درساً تعلمته في الأمن السيبراني. ساعد زملاءك على اكتشاف المخاطر قبل وقوعها.">Share a cybersecurity incident, warning sign, or lesson learned. Help colleagues recognize risks before they happen.</p>
+        <button class="primary-btn" id="openFormBtn" type="button"><span>＋</span><span data-en="Share your experience" data-ar="شارك تجربتك">Share your experience</span></button>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="shield">✓</div>
+        <div class="float-card card-mail">✉ <span data-en="Suspicious email" data-ar="بريد مشبوه">Suspicious email</span></div>
+        <div class="float-card card-lock">▣ <span data-en="Account safety" data-ar="أمان الحساب">Account safety</span></div>
+        <div class="float-card card-alert">! <span data-en="Fraud awareness" data-ar="التوعية بالاحتيال">Fraud awareness</span></div>
+      </div>
+    </section>
+
+    <section class="privacy-note">
+      <span class="privacy-icon">ⓘ</span>
+      <div>
+        <strong data-en="Protect sensitive information" data-ar="احمِ المعلومات الحساسة">Protect sensitive information</strong>
+        <p data-en="Do not include passwords, one-time codes, personal IDs, confidential documents, customer data, or details that could expose systems. Describe the lesson without identifying people." data-ar="لا تكتب كلمات المرور أو رموز التحقق أو أرقام الهوية أو المستندات السرية أو بيانات المتعاملين أو تفاصيل قد تكشف الأنظمة. اشرح الدرس دون تحديد هوية الأشخاص.">Do not include passwords, one-time codes, personal IDs, confidential documents, customer data, or details that could expose systems. Describe the lesson without identifying people.</p>
+      </div>
+    </section>
+
+    <section class="board-heading">
+      <div>
+        <p class="eyebrow" data-en="COMMUNITY KNOWLEDGE" data-ar="معرفة مشتركة">COMMUNITY KNOWLEDGE</p>
+        <h2 data-en="Experiences from our community" data-ar="تجارب من مجتمعنا">Experiences from our community</h2>
+        <p class="muted" data-en="Browse lessons, warning signs, and practical advice shared by colleagues." data-ar="تصفح الدروس والعلامات التحذيرية والنصائح العملية التي يشاركها الزملاء.">Browse lessons, warning signs, and practical advice shared by colleagues.</p>
+      </div>
+      <div class="stats"><span class="stat-number" id="postCount">0</span><span data-en="shared stories" data-ar="تجربة مشتركة">shared stories</span></div>
+    </section>
+
+    <section class="tools" aria-label="Search and filters">
+      <label class="search-box">
+        <span>⌕</span>
+        <input id="searchInput" type="search" placeholder="Search stories / ابحث في التجارب" aria-label="Search stories">
+      </label>
+      <div class="filters" id="categoryFilters">
+        <button class="filter active" data-category="all" type="button" data-en="All stories" data-ar="كل التجارب">All stories</button>
+        <button class="filter" data-category="phishing" type="button" data-en="Phishing" data-ar="التصيد الاحتيالي">Phishing</button>
+        <button class="filter" data-category="fraud" type="button" data-en="Fraud" data-ar="الاحتيال">Fraud</button>
+        <button class="filter" data-category="account" type="button" data-en="Account security" data-ar="أمان الحساب">Account security</button>
+        <button class="filter" data-category="device" type="button" data-en="Device / malware" data-ar="الأجهزة والبرمجيات الخبيثة">Device / malware</button>
+        <button class="filter" data-category="other" type="button" data-en="Other" data-ar="أخرى">Other</button>
+      </div>
+    </section>
+
+    <section id="storiesGrid" class="stories-grid" aria-live="polite"></section>
+    <div id="emptyState" class="empty-state hidden">
+      <div class="empty-icon">⌕</div>
+      <h3 data-en="No stories found" data-ar="لم يتم العثور على تجارب">No stories found</h3>
+      <p data-en="Try another search or share the first experience." data-ar="جرّب البحث بكلمات أخرى أو شارك أول تجربة.">Try another search or share the first experience.</p>
+      <button class="secondary-btn" id="emptyShareBtn" type="button" data-en="Share an experience" data-ar="شارك تجربة">Share an experience</button>
+    </div>
+
+    <section class="local-warning">
+      <strong data-en="Prototype storage notice" data-ar="تنبيه بشأن التخزين في النسخة التجريبية">Prototype storage notice</strong>
+      <p data-en="This demo saves stories only in this browser on this device. It does not send them to IT or share them with other employees. For organization-wide use, deploy an approved internal application with authentication, server-side storage, access controls, moderation, and retention rules." data-ar="تحفظ هذه النسخة التجريبية التجارب في هذا المتصفح وعلى هذا الجهاز فقط. لا ترسلها إلى قسم تقنية المعلومات ولا تشاركها مع الموظفين الآخرين. للاستخدام على مستوى المؤسسة، يجب نشر تطبيق داخلي معتمد يتضمن المصادقة والتخزين على الخادم وضوابط الوصول والمراجعة وسياسة الاحتفاظ بالبيانات.">This demo saves stories only in this browser on this device. It does not send them to IT or share them with other employees. For organization-wide use, deploy an approved internal application with authentication, server-side storage, access controls, moderation, and retention rules.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>CyberSafe Stories · قصص الأمن السيبراني</span>
+    <span data-en="Internal awareness concept" data-ar="نموذج توعوي داخلي">Internal awareness concept</span>
+  </footer>
+
+  <dialog id="storyDialog" class="story-dialog">
+    <form id="storyForm" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow" data-en="YOUR EXPERIENCE MATTERS" data-ar="تجربتك مهمة">YOUR EXPERIENCE MATTERS</p>
+          <h2 data-en="Share a story" data-ar="شارك تجربتك">Share a story</h2>
+          <p class="muted" data-en="Keep it anonymous and focus on what others can learn." data-ar="حافظ على عدم ذكر الهوية وركّز على ما يمكن للآخرين تعلمه.">Keep it anonymous and focus on what others can learn.</p>
+        </div>
+        <button type="button" class="close-btn" id="closeDialogBtn" aria-label="Close">×</button>
+      </div>
+
+      <label class="field-label" for="storyTitle"><span data-en="Title" data-ar="العنوان">Title</span> <span class="required">*</span></label>
+      <input id="storyTitle" maxlength="100" required placeholder="e.g. A convincing delivery-message scam / مثال: رسالة توصيل احتيالية">
+
+      <label class="field-label" for="storyCategory"><span data-en="Category" data-ar="التصنيف">Category</span> <span class="required">*</span></label>
+      <select id="storyCategory" required>
+        <option value="phishing">Phishing / التصيد الاحتيالي</option>
+        <option value="fraud">Fraud / الاحتيال</option>
+        <option value="account">Account security / أمان الحساب</option>
+        <option value="device">Device / malware / الأجهزة والبرمجيات الخبيثة</option>
+        <option value="other">Other / أخرى</option>
+      </select>
+
+      <div class="two-col">
+        <div>
+          <label class="field-label" for="storyExperience"><span data-en="What happened?" data-ar="ماذا حدث؟">What happened?</span> <span class="required">*</span></label>
+          <textarea id="storyExperience" rows="4" maxlength="1200" required placeholder="Describe the situation without names or sensitive details... / اشرح الموقف دون أسماء أو تفاصيل حساسة..."></textarea>
+        </div>
+        <div>
+          <label class="field-label" for="storyLesson"><span data-en="What did you learn?" data-ar="ماذا تعلمت؟">What did you learn?</span> <span class="required">*</span></label>
+          <textarea id="storyLesson" rows="4" maxlength="800" required placeholder="What should colleagues watch for or do? / ما الذي يجب أن ينتبه له الزملاء أو يفعلوه؟"></textarea>
+        </div>
+      </div>
+
+      <label class="field-label" for="storyAction"><span data-en="What action did you take? (optional)" data-ar="ما الإجراء الذي اتخذته؟ (اختياري)">What action did you take? (optional)</span></label>
+      <textarea id="storyAction" rows="2" maxlength="500" placeholder="e.g. Reported the message to IT / مثال: أبلغت قسم تقنية المعلومات"></textarea>
+
+      <label class="check-row">
+        <input type="checkbox" id="privacyConfirm" required>
+        <span data-en="I have not included passwords, verification codes, personal data, or confidential organizational information." data-ar="أؤكد أنني لم أدرج كلمات مرور أو رموز تحقق أو بيانات شخصية أو معلومات سرية تخص المؤسسة.">I have not included passwords, verification codes, personal data, or confidential organizational information.</span>
+      </label>
+      <p class="form-error hidden" id="formError" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="secondary-btn" id="cancelDialogBtn" data-en="Cancel" data-ar="إلغاء">Cancel</button>
+        <button type="submit" class="primary-btn" data-en="Save story on this device" data-ar="حفظ التجربة على هذا الجهاز">Save story on this device</button>
+      </div>
+      <p class="form-footnote" data-en="Local demo only — saving here does not submit the story to your IT department." data-ar="نسخة محلية تجريبية فقط — الحفظ هنا لا يرسل التجربة إلى قسم تقنية المعلومات.">Local demo only — saving here does not submit the story to your IT department.</p>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
