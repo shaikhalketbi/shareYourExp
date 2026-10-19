@@ -1,338 +1,402 @@
-const STORAGE_KEY = "cybersafe-stories-v1";
 
-const translations = {
-  en: {
-    saved: "Story saved on this device.",
-    deleted: "Story removed.",
-    titleRequired: "Please add a title.",
-    fieldsRequired: "Please complete the required fields.",
-    privacyRequired: "Please confirm that you have not included sensitive information.",
-    unsafe: "Please remove passwords, verification codes, personal identifiers, confidential details, and suspicious links before saving.",
-    searchPlaceholder: "Search stories / ابحث في التجارب",
-    categories: {
-      phishing: ["Phishing", "✉"],
-      fraud: ["Fraud", "⚠"],
-      account: ["Account security", "▣"],
-      device: ["Device / malware", "⌘"],
-      other: ["Other", "◈"]
-    },
-    happened: "What happened",
-    lesson: "What we can learn",
-    action: "Action taken: ",
-    anonymous: "Shared anonymously",
-    emptySearch: "No stories match your search.",
-    localOnly: "Local demo only"
-  },
-  ar: {
-    saved: "تم حفظ التجربة على هذا الجهاز.",
-    deleted: "تم حذف التجربة.",
-    titleRequired: "يرجى إدخال عنوان.",
-    fieldsRequired: "يرجى تعبئة الحقول المطلوبة.",
-    privacyRequired: "يرجى تأكيد عدم إدراج معلومات حساسة.",
-    unsafe: "يرجى إزالة كلمات المرور ورموز التحقق والمعرّفات الشخصية والتفاصيل السرية والروابط المشبوهة قبل الحفظ.",
-    searchPlaceholder: "ابحث في التجارب / Search stories",
-    categories: {
-      phishing: ["التصيد الاحتيالي", "✉"],
-      fraud: ["الاحتيال", "⚠"],
-      account: ["أمان الحساب", "▣"],
-      device: ["الأجهزة والبرمجيات الخبيثة", "⌘"],
-      other: ["أخرى", "◈"]
-    },
-    happened: "ماذا حدث",
-    lesson: "ما الذي يمكن أن نتعلمه",
-    action: "الإجراء المتخذ: ",
-    anonymous: "مشاركة دون ذكر الاسم",
-    emptySearch: "لا توجد تجارب تطابق البحث.",
-    localOnly: "نسخة محلية فقط"
-  }
-};
-
-const starterStories = [
-  {
-    id: "sample-1",
-    category: "phishing",
-    date: "2026-10-10",
-    title: "A delivery message that looked real",
-    titleAr: "رسالة توصيل بدت حقيقية",
-    experience: "An unexpected delivery message asked me to open a link and pay a small fee. The sender and urgent wording made it look convincing.",
-    experienceAr: "وصلتني رسالة توصيل غير متوقعة تطلب فتح رابط ودفع مبلغ بسيط. بدا المرسل وصياغة الرسالة المستعجلة مقنعين.",
-    lesson: "Check delivery updates through the official app or website. Do not use payment links from unexpected messages.",
-    lessonAr: "تحقق من تحديثات التوصيل عبر التطبيق أو الموقع الرسمي. لا تستخدم روابط الدفع الواردة في رسائل غير متوقعة.",
-    action: "I did not open the link and reported the message.",
-    actionAr: "لم أفتح الرابط وأبلغت عن الرسالة.",
-    sample: true
-  },
-  {
-    id: "sample-2",
-    category: "account",
-    date: "2026-10-08",
-    title: "An unexpected sign-in approval",
-    titleAr: "طلب موافقة تسجيل دخول غير متوقع",
-    experience: "I received a multi-factor authentication approval request while I was not trying to sign in.",
-    experienceAr: "وصلني طلب للموافقة على المصادقة متعددة العوامل رغم أنني لم أكن أحاول تسجيل الدخول.",
-    lesson: "Never approve a sign-in you did not initiate. Report repeated requests to the IT or security team.",
-    lessonAr: "لا توافق أبداً على تسجيل دخول لم تبدأه بنفسك. أبلغ فريق تقنية المعلومات أو الأمن عن الطلبات المتكررة.",
-    action: "I denied the request and reported it to IT.",
-    actionAr: "رفضت الطلب وأبلغت قسم تقنية المعلومات.",
-    sample: true
-  },
-  {
-    id: "sample-3",
-    category: "fraud",
-    date: "2026-10-04",
-    title: "A caller pretending to be IT support",
-    titleAr: "متصل ينتحل صفة الدعم الفني",
-    experience: "A caller claimed there was an urgent account issue and asked me to share a verification code.",
-    experienceAr: "ادعى متصل وجود مشكلة عاجلة في الحساب وطلب مني مشاركة رمز تحقق.",
-    lesson: "IT support should not need your password or one-time verification code. Verify requests through known internal contact channels.",
-    lessonAr: "لا يحتاج الدعم الفني إلى كلمة مرورك أو رمز التحقق لمرة واحدة. تحقق من الطلبات عبر قنوات الاتصال الداخلية المعروفة.",
-    action: "I ended the call and contacted the service desk using the official directory.",
-    actionAr: "أنهيت المكالمة وتواصلت مع مكتب الخدمة عبر الدليل الرسمي.",
-    sample: true
-  }
-];
+const STORAGE_KEY = "cybersafeEmployeeStories";
 
 let language = "en";
 let activeCategory = "all";
-let userStories = [];
+let stories = loadStories();
 
-const $ = (id) => document.getElementById(id);
-const dialog = $("storyDialog");
-const form = $("storyForm");
+const $ = id => document.getElementById(id);
 
+const categoryNames = {
+  en: {
+    phishing: "Phishing",
+    hacking: "Hacking",
+    fraud: "Fraud",
+    account: "Account security",
+    other: "Other",
+    lesson: "What we can learn",
+    anonymous: "Shared anonymously",
+    action: "Action taken: ",
+    by: "Shared by: "
+  },
+  ar: {
+    phishing: "التصيد الاحتيالي",
+    hacking: "الاختراق",
+    fraud: "الاحتيال",
+    account: "أمان الحساب",
+    other: "أخرى",
+    lesson: "ما الذي يمكن أن نتعلمه",
+    anonymous: "مشاركة مجهولة",
+    action: "الإجراء المتخذ: ",
+    by: "شاركها: "
+  }
+};
+
+// Escape text before displaying user-submitted content.
 function escapeHTML(value = "") {
-  return String(value).replace(/[&<>"']/g, ch => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[ch]));
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
 }
 
-function getStoredStories() {
+function loadStories() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || "[]"
+    );
+
+    return Array.isArray(saved) ? saved : [];
   } catch {
     return [];
   }
 }
 
-function saveStoredStories() {
+function saveStories() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userStories));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(stories)
+    );
     return true;
   } catch {
-    showToast(language === "ar"
-      ? "تعذر الحفظ في المتصفح. قد تكون مساحة التخزين ممتلئة."
-      : "Could not save in this browser. Storage may be unavailable or full.");
+    showToast(
+      language === "ar"
+        ? "تعذر حفظ التجربة في المتصفح."
+        : "Could not save the story in this browser."
+    );
     return false;
   }
 }
 
-function allStories() {
-  return [...userStories, ...starterStories].sort((a, b) => b.date.localeCompare(a.date));
+function getCategoryName(category) {
+  return categoryNames[language][category] || categoryNames[language].other;
 }
 
-function currentText(story, field) {
-  const arField = `${field}Ar`;
-  if (language === "ar" && story[arField]) return story[arField];
-  return story[field] || "";
-}
-
-function categoryLabel(category) {
-  return translations[language].categories[category] || translations[language].categories.other;
-}
-
-function formatDate(dateString) {
-  const date = new Date(`${dateString}T12:00:00`);
-  if (Number.isNaN(date.getTime())) return escapeHTML(dateString);
-  return new Intl.DateTimeFormat(language === "ar" ? "ar-AE" : "en-GB", {
-    day: "numeric", month: "short", year: "numeric"
-  }).format(date);
+function getDate(date) {
+  return new Intl.DateTimeFormat(
+    language === "ar" ? "ar-AE" : "en-GB",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  ).format(new Date(date + "T12:00:00"));
 }
 
 function renderStories() {
-  const query = $("searchInput").value.trim().toLocaleLowerCase();
-  const filtered = allStories().filter(story => {
-    const matchesCategory = activeCategory === "all" || story.category === activeCategory;
-    const searchable = [
-      currentText(story, "title"), currentText(story, "experience"),
-      currentText(story, "lesson"), currentText(story, "action"),
-      story.title, story.titleAr, story.experience, story.experienceAr,
-      story.lesson, story.lessonAr, story.action, story.actionAr
+  const query = $("searchInput").value
+    .trim()
+    .toLocaleLowerCase();
+
+  const filtered = stories.filter(story => {
+    const categoryMatches =
+      activeCategory === "all" ||
+      story.category === activeCategory;
+
+    const text = [
+      story.title,
+      story.experience,
+      story.lesson,
+      story.action,
+      story.author,
+      story.category
     ].join(" ").toLocaleLowerCase();
-    return matchesCategory && (!query || searchable.includes(query));
+
+    return categoryMatches &&
+      (!query || text.includes(query));
   });
 
-  $("postCount").textContent = allStories().length;
-  $("storiesGrid").innerHTML = filtered.map(story => {
-    const [categoryName, icon] = categoryLabel(story.category);
-    const title = currentText(story, "title");
-    const experience = currentText(story, "experience");
-    const lesson = currentText(story, "lesson");
-    const action = currentText(story, "action");
-    const isUserStory = !story.sample;
+  $("postCount").textContent = stories.length;
+
+  $("stories").innerHTML = filtered.map(story => {
+    const category = escapeHTML(getCategoryName(story.category));
+
+    const author = story.sharingMode === "named"
+      ? `<span>${escapeHTML(categoryNames[language].by)}${escapeHTML(story.author)}</span>`
+      : `<span>${escapeHTML(categoryNames[language].anonymous)}</span>`;
+
+    const action = story.action
+      ? `<p class="author">${escapeHTML(categoryNames[language].action)}${escapeHTML(story.action)}</p>`
+      : "";
+
     return `
       <article class="story-card">
         <div class="card-top">
-          <span class="category">${icon} ${escapeHTML(categoryName)}</span>
-          <span class="story-date">${formatDate(story.date)}</span>
+          <span class="category">${category}</span>
+          <span class="story-date">${escapeHTML(getDate(story.date))}</span>
         </div>
-        <h3>${escapeHTML(title)}</h3>
-        <p class="story-text">${escapeHTML(experience)}</p>
-        <div class="lesson-box">
-          <span class="lesson-label">${escapeHTML(translations[language].lesson)}</span>
-          <p>${escapeHTML(lesson)}</p>
+
+        <h3>${escapeHTML(story.title)}</h3>
+
+        <p class="story-text">${escapeHTML(story.experience)}</p>
+
+        <div class="lesson">
+          <strong>${escapeHTML(categoryNames[language].lesson)}</strong>
+          <p>${escapeHTML(story.lesson)}</p>
         </div>
-        ${action ? `<p class="action-line">${escapeHTML(translations[language].action)}${escapeHTML(action)}</p>` : ""}
-        ${isUserStory ? `<p class="action-line">${escapeHTML(translations[language].anonymous)} <button type="button" class="delete-story" data-delete="${escapeHTML(story.id)}" aria-label="${language === "ar" ? "حذف التجربة" : "Delete story"}">×</button></p>` : ""}
-      </article>`;
+
+        ${action}
+
+        <div class="author">
+          ${author}
+          <button
+            type="button"
+            class="delete-btn"
+            data-delete="${escapeHTML(story.id)}">
+            ${language === "ar" ? "حذف" : "Delete"}
+          </button>
+        </div>
+      </article>
+    `;
   }).join("");
 
-  $("emptyState").classList.toggle("hidden", filtered.length > 0);
-  $("storiesGrid").classList.toggle("hidden", filtered.length === 0);
-  if (filtered.length === 0 && query) {
-    $("emptyState").querySelector("p").textContent = translations[language].emptySearch;
-  } else {
-    $("emptyState").querySelector("p").textContent = language === "ar"
-      ? "كن أول من يشارك تجربة أو جرّب البحث بكلمات أخرى."
-      : "Be the first to share an experience or try another search.";
-  }
-  document.querySelectorAll(".delete-story").forEach(button => {
-    button.addEventListener("click", () => deleteStory(button.dataset.delete));
+  $("emptyState").classList.toggle(
+    "hidden",
+    filtered.length > 0
+  );
+
+  document.querySelectorAll("[data-delete]").forEach(button => {
+    button.addEventListener("click", () => {
+      deleteStory(button.dataset.delete);
+    });
   });
 }
 
 function applyLanguage() {
   document.documentElement.lang = language;
-  document.body.dir = language === "ar" ? "rtl" : "ltr";
-  document.querySelectorAll("[data-en][data-ar]").forEach(el => {
-    el.textContent = el.dataset[language];
+
+  document.body.dir =
+    language === "ar" ? "rtl" : "ltr";
+
+  document.querySelectorAll("[data-en][data-ar]").forEach(element => {
+    element.textContent = element.dataset[language];
   });
-  $("languageToggle").textContent = language === "en" ? "العربية" : "English";
-  $("searchInput").placeholder = translations[language].searchPlaceholder;
-  $("storyTitle").placeholder = language === "ar"
-    ? "مثال: رسالة توصيل احتيالية / A convincing delivery-message scam"
-    : "e.g. A convincing delivery-message scam / مثال: رسالة توصيل احتيالية";
-  $("storyExperience").placeholder = language === "ar"
-    ? "اشرح الموقف دون أسماء أو تفاصيل حساسة..."
-    : "Describe the situation without names or sensitive details...";
-  $("storyLesson").placeholder = language === "ar"
-    ? "ما الذي يجب أن ينتبه له الزملاء أو يفعلوه؟"
-    : "What should colleagues watch for or do?";
-  $("storyAction").placeholder = language === "ar"
-    ? "مثال: أبلغت قسم تقنية المعلومات"
-    : "e.g. Reported the message to IT";
+
+  $("languageToggle").textContent =
+    language === "en" ? "العربية" : "English";
+
+  $("searchInput").placeholder =
+    language === "en"
+      ? "Search experiences / ابحث في التجارب"
+      : "ابحث في التجارب / Search experiences";
+
   renderStories();
 }
 
-function openDialog() {
+function openForm() {
+  $("storyForm").reset();
+
+  // Anonymous sharing is the default.
+  document.querySelector(
+    'input[name="sharingMode"][value="anonymous"]'
+  ).checked = true;
+
+  $("nameField").classList.add("hidden");
+  $("employeeName").required = false;
   $("formError").classList.add("hidden");
-  form.reset();
-  if (typeof dialog.showModal === "function") dialog.showModal();
-  else dialog.setAttribute("open", "");
+
+  $("storyDialog").showModal();
 }
 
-function closeDialog() {
-  if (typeof dialog.close === "function") dialog.close();
-  else dialog.removeAttribute("open");
+function closeForm() {
+  $("storyDialog").close();
 }
 
 function showToast(message) {
   const toast = $("toast");
+
   toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(showToast.timeout);
-  showToast.timeout = setTimeout(() => toast.classList.remove("show"), 2600);
+  toast.classList.remove("hidden");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer = setTimeout(() => {
+    toast.classList.add("hidden");
+  }, 3000);
 }
 
-function looksSensitive(text) {
+// Basic warning checks only; this is not a security scanner.
+function containsSensitivePattern(text) {
   const patterns = [
     /\b(password|passwd|passcode)\s*[:=]\s*\S+/i,
-    /\b(otp|verification code|one[- ]time code)\s*[:=]\s*\S+/i,
-    /\b\d{3}-\d{2}-\d{4}\b/,
-    /\b(?:\d[ -]*?){13,19}\b/
+    /\b(otp|verification code|one-time code)\s*[:=]\s*\S+/i,
+    /\b\d{3}-\d{2}-\d{4}\b/
   ];
+
   return patterns.some(pattern => pattern.test(text));
 }
 
-function submitStory(event) {
+// Show or hide the employee name field.
+document.querySelectorAll(
+  'input[name="sharingMode"]'
+).forEach(radio => {
+  radio.addEventListener("change", () => {
+    const isNamed =
+      document.querySelector(
+        'input[name="sharingMode"]:checked'
+      ).value === "named";
+
+    $("nameField").classList.toggle(
+      "hidden",
+      !isNamed
+    );
+
+    $("employeeName").required = isNamed;
+
+    if (!isNamed) {
+      $("employeeName").value = "";
+    }
+  });
+});
+
+// Submit a story.
+$("storyForm").addEventListener("submit", event => {
   event.preventDefault();
-  const title = $("storyTitle").value.trim();
-  const experience = $("storyExperience").value.trim();
-  const lesson = $("storyLesson").value.trim();
-  const action = $("storyAction").value.trim();
-  const category = $("storyCategory").value;
-  const error = $("formError");
+
+  const title = $("title").value.trim();
+  const experience = $("experience").value.trim();
+  const lesson = $("lesson").value.trim();
+  const action = $("action").value.trim();
+  const category = $("category").value;
+
+  const sharingMode = document.querySelector(
+    'input[name="sharingMode"]:checked'
+  ).value;
+
+  const author = $("employeeName").value.trim();
+
+  let errorMessage = "";
 
   if (!title || !experience || !lesson) {
-    error.textContent = translations[language].fieldsRequired;
-    error.classList.remove("hidden");
-    return;
+    errorMessage = language === "ar"
+      ? "يرجى تعبئة جميع الحقول المطلوبة."
+      : "Please complete all required fields.";
+  } else if (sharingMode === "named" && !author) {
+    errorMessage = language === "ar"
+      ? "يرجى كتابة اسمك."
+      : "Please enter your name.";
+  } else if (!$("privacyConfirm").checked) {
+    errorMessage = language === "ar"
+      ? "يرجى تأكيد عدم إدراج معلومات سرية."
+      : "Please confirm that no confidential information is included.";
+  } else if (
+    containsSensitivePattern(
+      [title, experience, lesson, action].join("\n")
+    )
+  ) {
+    errorMessage = language === "ar"
+      ? "يبدو أن النص يحتوي على معلومات حساسة. راجعه قبل الحفظ."
+      : "The text may contain sensitive information. Review it before saving.";
   }
-  if (!$("privacyConfirm").checked) {
-    error.textContent = translations[language].privacyRequired;
-    error.classList.remove("hidden");
-    return;
-  }
-  if (looksSensitive(`${title}\n${experience}\n${lesson}\n${action}`)) {
-    error.textContent = translations[language].unsafe;
-    error.classList.remove("hidden");
+
+  if (errorMessage) {
+    $("formError").textContent = errorMessage;
+    $("formError").classList.remove("hidden");
     return;
   }
 
-  const now = new Date();
-  const story = {
-    id: `story-${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
-    category,
-    date: now.toISOString().slice(0, 10),
+  const newStory = {
+    id: Date.now().toString() +
+      Math.random().toString(36).slice(2, 7),
+
+    date: new Date().toISOString().slice(0, 10),
     title,
-    titleAr: "",
+    category,
     experience,
-    experienceAr: "",
     lesson,
-    lessonAr: "",
     action,
-    actionAr: "",
-    sample: false
+
+    // Never store a name when anonymous sharing is selected.
+    sharingMode,
+    author: sharingMode === "named" ? author : ""
   };
-  userStories.unshift(story);
-  if (!saveStoredStories()) {
-    userStories = userStories.filter(item => item.id !== story.id);
+
+  const previousStories = stories;
+  stories = [newStory, ...stories];
+
+  if (!saveStories()) {
+    stories = previousStories;
     return;
   }
-  closeDialog();
+
+  closeForm();
   renderStories();
-  showToast(translations[language].saved);
-}
 
+  showToast(
+    language === "ar"
+      ? "تم حفظ تجربتك بنجاح."
+      : "Your experience was saved successfully."
+  );
+});
+
+// Search experiences.
+$("searchInput").addEventListener(
+  "input",
+  renderStories
+);
+
+// Filter experiences by category.
+$("filters").addEventListener("click", event => {
+  const button = event.target.closest("[data-category]");
+
+  if (!button) return;
+
+  activeCategory = button.dataset.category;
+
+  document.querySelectorAll(".filter").forEach(filter => {
+    filter.classList.toggle("active", filter === button);
+  });
+
+  renderStories();
+});
+
+// Delete a story saved in this browser.
 function deleteStory(id) {
-  userStories = userStories.filter(story => story.id !== id);
-  if (saveStoredStories()) {
-    renderStories();
-    showToast(translations[language].deleted);
+  const confirmed = window.confirm(
+    language === "ar"
+      ? "هل تريد حذف هذه التجربة من هذا المتصفح؟"
+      : "Delete this story from this browser?"
+  );
+
+  if (!confirmed) return;
+
+  const previousStories = stories;
+  stories = stories.filter(story => story.id !== id);
+
+  if (!saveStories()) {
+    stories = previousStories;
+    return;
   }
+
+  renderStories();
+
+  showToast(
+    language === "ar"
+      ? "تم حذف التجربة."
+      : "Story deleted."
+  );
 }
 
+// Interface controls.
 $("languageToggle").addEventListener("click", () => {
   language = language === "en" ? "ar" : "en";
   applyLanguage();
 });
-$("openFormBtn").addEventListener("click", openDialog);
-$("emptyShareBtn").addEventListener("click", openDialog);
-$("closeDialogBtn").addEventListener("click", closeDialog);
-$("cancelDialogBtn").addEventListener("click", closeDialog);
-$("searchInput").addEventListener("input", renderStories);
-$("categoryFilters").addEventListener("click", event => {
-  const button = event.target.closest("[data-category]");
-  if (!button) return;
-  activeCategory = button.dataset.category;
-  document.querySelectorAll(".filter").forEach(filter => filter.classList.toggle("active", filter === button));
-  renderStories();
-});
-form.addEventListener("submit", submitStory);
-dialog.addEventListener("click", event => {
-  if (event.target === dialog) closeDialog();
+
+$("openForm").addEventListener("click", openForm);
+$("closeForm").addEventListener("click", closeForm);
+$("cancelForm").addEventListener("click", closeForm);
+
+// Close the form when the user clicks outside it.
+$("storyDialog").addEventListener("click", event => {
+  if (event.target === $("storyDialog")) {
+    closeForm();
+  }
 });
 
-userStories = getStoredStories();
+// Start the website.
 applyLanguage();
